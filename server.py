@@ -49,6 +49,8 @@ def hello():
 @app.route("/Scripts.js",methods=["GET"])
 def javascript():
     return redirect(url_for('static', filename='Scripts.js'))
+    
+    
 #@app.route("/api/substance", methods=["POST"])
 def receive_sub():
     print(request.form)
