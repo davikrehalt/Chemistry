@@ -1,0 +1,126 @@
+body, h1, h2, h3, input, button, select, form, table, th, tr{
+	margin: 0;
+	padding: 0;
+}
+
+.divider#top{
+	width: 100%;
+	height: 5px;
+	background-color: #FFF;
+}
+
+.divider{
+	width: 100%;
+	height: 5px;
+	background-color: #222;
+}
+
+body{
+	width: 100%;
+	background-color: #FFF;
+	font-family: sans-serif;
+}
+
+#main{
+	margin-left: auto;
+	margin-right: auto;
+	background-color: #DDD;
+}
+
+#substances_div{
+	background-color: #DDD;
+}
+
+h1#title{
+	
+}
+
+#substances_div h1{
+	background-color: #CCC;
+	padding: 20px 0 20px 5px;
+}
+
+.text_input{
+	padding: 20px 0 20px 10px;
+}
+
+.select{
+	background-color: #CCC;
+	padding: 20px 0 20px 10px;
+}
+
+#tempfeed{
+	padding: 20px 0 20px 10px;
+}
+
+#subfeed{
+	background-color: #CCC;
+}
+
+#subfeed h2{
+	padding: 20px 0 20px 10px;
+}
+
+.sub{
+	padding: 20px 0 20px 10px
+}
+
+.sub#sourcelist{
+	margin: 0;
+	padding: 0;
+}
+
+.sub#subtext{
+	padding-top: 0;
+}
+
+table, th, tr{
+	border-collapse: collapse;
+	border: 1px solid black;
+	padding: 0 4px 0 4px;
+}
+
+h1#title{
+	text-align: center;
+	background-color: #333;
+	color: white;
+	box-shadow: 0 6px 2px -2px gray;
+	background-color: #333;
+	padding: 20px 0 20px 5px;
+	position: relative;
+	width: 100%;
+	z-index: 1;
+}
+
+#reactions_div h1{
+	padding: 20px 0 20px 5px;
+}
+
+#rctfeed{
+	padding: 20px 0 20px 10px;
+	background-color: #CCC;
+}
+
+#rctfeed table{
+	padding: 0;
+}
+
+.sub#rcttext{
+	padding-left: 0;
+	padding-bottom: 0;
+}
+
+#Data{
+	width: 50px;
+	margin: 0 auto 0 auto;
+}
+
+#Data button{
+	font-size: 40px;
+	padding: 5px;
+	margin: 10px 0 10px 0;
+}
+
+button, input{
+	padding: 5px;
+}
