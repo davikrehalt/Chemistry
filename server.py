@@ -75,6 +75,10 @@ def hello():
     print(pout)
     return render_template('index.html',entry=pout)
  
+def hellocorn(environ,start_response):
+    print 'corn!'
+    return render_template('index.html',entry=pout)
+ 
 @app.route("/Scripts.js",methods=["GET"])
 def javascript():
     return redirect(url_for('static', filename='Scripts.js'))
