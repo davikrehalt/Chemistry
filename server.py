@@ -7,6 +7,9 @@ from flask import Flask,request,g, url_for
 from flask import jsonify, render_template,redirect,abort
 
 app = Flask(__name__)
+
+app.debug=True
+
 DATABASE = 'chemistry.db'
 conn=sqlite3.connect(DATABASE)
 c=conn.cursor()
@@ -16,6 +19,9 @@ conn.commit()
 conn.close()
 
 subno=[0]
+
+port = int(os.environ.get('PORT', 5000))
+
 def get30digits():
     return ''.join([str(random.randrange(10)) for i in range(30)])
     
@@ -77,7 +83,7 @@ def hello():
  
 def hellocorn(environ,start_response):
     print 'corn!'
-    return render_template('index.html')
+    return app.load_static_file('index.html')
  
 @app.route("/Scripts.js",methods=["GET"])
 def javascript():
