@@ -1,1 +1,1 @@
-web: gunicorn server:hello --log-file=-
+web: gunicorn server:hellocorn --log-file=-
