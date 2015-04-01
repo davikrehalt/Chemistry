@@ -4,9 +4,31 @@ var tempsubl=[];
 
 function sum(list){return list.reduce(function(a,b){return Number(a)+Number(b)},0)}
 
+function arrayMin(arr) {
+  var len = arr.length, min = Infinity;
+  while (len--) {
+    if (arr[len] < min) {
+      min = arr[len];
+    }
+  }
+  return min;
+};
+
+function arrayMax(arr) {
+  var len = arr.length, max = -Infinity;
+  while (len--) {
+    if (arr[len] > max) {
+      max = arr[len];
+    }
+  }
+  return max;
+};
+
 function substance(Name,concent,issource){
     this.Name=Name;
-    this.concent=Number(concent);
+
+    this.concenti=Number(concent);
+    this.concent=this.concenti
     if (issource=='True'){
         this.issource=true;
     }else{
@@ -29,6 +51,7 @@ function source(Name,bconcent,pointed){
 
 source.prototype=new substance;
 
+
 function reaction(forward,backward,A1,A2,B){
     this.forward=forward;
     this.backward=backward;
@@ -37,9 +60,15 @@ function reaction(forward,backward,A1,A2,B){
     this.P=B;
 }
 
+function resetstate(){
+    for (sub in Sublist){
+        Sublist[sub].concent=Sublist[sub].concenti;
+    }
+}
+
 function upstep(dt){
      dt = typeof dt !== 'undefined' ? dt : 0.001;
-     console.log("called upstep time:"+dt.toString())
+     //console.log("called upstep time:"+dt.toString())
 
      var templ=Array.apply(null, new Array(Sublist.length)).map(Number.prototype.valueOf,0);
      for (rct in Rctlist){
@@ -47,17 +76,17 @@ function upstep(dt){
         var ffwd=rxn.forward*Sublist[rxn.R1].concent*Sublist[rxn.R2].concent*dt;
         var fbck=rxn.backward*Sublist[rxn.P].concent*dt;
         var cc=ffwd-fbck;
-        console.log(cc);
+        //console.log(cc);
         templ[rxn.R1]-=cc;
         templ[rxn.R2]-=cc;
         templ[rxn.P]+=cc;
-        console.log(templ);
+        //console.log(templ);
      } 
 
      for (sub in Sublist){
         if (!Sublist[sub].issource){
             Sublist[sub].concent+=templ[sub];
-            console.log(Sublist[sub].concent);
+            //console.log(Sublist[sub].concent);
         }
      }
      for (sub in Sublist){
@@ -65,16 +94,144 @@ function upstep(dt){
             Sublist[sub].update();
         }
      }
-     console.log("finished step")
-     updatefeedsub();
+     //console.log("finished step")
+     //updatefeedsub();
 
+}
+
+function graph(data){
+
+    console.log("called graph")
+
+    document.getElementById("graphs").innerHTML=""
+    var n=data.length
+    //console.log(n);
+    //console.log(data[0])
+    var margin = {top: 20, right: 20, bottom: 30, left: 50},
+        width = 960 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+
+    //scales
+    var x = d3.scale.linear()
+        .domain(d3.extent(data,function(d){return d[0]}))
+        .range([0, width]);
+
+    //console.log(x(data[0][0]))
+    //console.log(x(5))
+    
+    var minl=[]
+    var maxl=[]
+
+    for (sub in Sublist){
+        //console.log(d3.min(data,function(d){return +d[Number(sub)+1]}))
+        minl.push(d3.min(data,function(d){return +d[Number(sub)+1]}))
+        maxl.push(d3.max(data,function(d){return +d[Number(sub)+1]}))
+    }
+    //console.log(minl);
+    //console.log(maxl);
+    console.log(arrayMin(minl).toString()+arrayMax(maxl).toString());
+    var y = d3.scale.linear()
+        .domain([arrayMin(minl),arrayMax(maxl)])
+        .range([height, 0]);
+
+    //console.log(y(data[0][1]))
+    //console.log(y(0.5))
+
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom");
+
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left");
+
+    //generates path
+    var line={};
+    for (var sub=0;sub<Sublist.length;sub++){
+        line.sub=d3.svg.line()
+        line.sub.x(function(d) { return x(d[0]); })
+            .y(function(d) { return y(d[sub+1])});
+    }
+    var svg = d3.select("#graphs").append("svg")
+    
+    svg.attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    console.log("functions of graph")
+    /* add some input later
+    d3.tsv("data.tsv", function(error, data) {
+      data.forEach(function(d) {
+        d.date = parseDate(d.date);
+        d.close = +d.close;
+      });
+      x.domain(d3.extent(data, function(d) { return d.date; }));
+      y.domain(d3.extent(data, function(d) { return d.close; }));
+
+    */
+    //console.log(data[0])
+    //console.log(data[0].x)
+    //axis
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+      .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em") //offset
+        .style("text-anchor", "end");
+
+    for (var sub=0;sub<Sublist.length;sub++){
+        //draw stuff
+        svg.append("path")
+            .datum(data)
+            .attr("class", "line")
+            .attr("d", line.sub)
+            .attr('stroke', 'green');
+    }
+    console.log("over");
+    //});
+}
+
+function state(i){
+    var ret=Sublist.map(function(Sub){return Sub.concent});
+    ret.unshift(i);
+    return ret
+}
+
+function Simulate(n,dt){
+    console.log("sim")
+    document.getElementById("graphs").innerHTML="loading..."
+    dt = typeof dt !== 'undefined' ? dt : 0.001;
+    n = typeof n !== 'undefined' ? n : 5000;
+    var data=[];
+    console.log(n)
+    console.log(dt)
+    console.log("started calculation")
+    console.log(state(0));
+    for (var i=0; i<n; i++){
+        //console.log(state(i));
+        data.push(state(i));
+        upstep(dt);
+    }
+    console.log(state(n))
+    console.log("tograph")
+    graph(data);
+    resetstate();
+    return false;
 }
 
 function updatefeedrct(){
     console.log("rctfeed")
     var writeout="<table><tr><th>Reactant 1</th><th>Reactant 2</th><th>Product</th><th>Forward Rate</th><th>Backward Rate</th></tr>";
     for (var rct in Rctlist){
-        writeout+="<tr><th>"+Sublist[Rctlist[rct].R1].Name+"</th><th>"+Sublist[Rctlist[rct].R2].Name+"</th><th>"+Sublist[Rctlist[rct].P].Name+"</th><th>"+Rctlist[rct].forward.toString()+"</th><th>"+Rctlist[rct].backward.toString()+"</th></tr>";
+        writeout+="<tr><th>"+Sublist[Rctlist[rct].R1].Name+"</th><th>"+Sublist[Rctlist[rct].R2].Name+"</th><th>"
+        writeout+=Sublist[Rctlist[rct].P].Name+"</th><th>"+Rctlist[rct].forward.toString()+"</th><th>"+Rctlist[rct].backward.toString()+"</th></tr>";
     }
     
     writeout+="</table>";
@@ -98,7 +255,7 @@ function updatedrop(){
     for (var sub in Sublist){
         writeout+="<option value=\"sub_"+sub.toString()+"\">"+Sublist[sub].Name+"</option>";
     }
-    
+
     document.getElementById("selectR1").innerHTML = writeout;
     document.getElementById("selectR2").innerHTML = writeout;
     document.getElementById("selectP").innerHTML = writeout;
@@ -134,7 +291,11 @@ function updatesourcelist(){
 function SubstanceSubmit() {
     var x = document.forms["substance_input"];
     if (isNaN(x.concent.value)){
-        alert("concentration not a number")
+        alert("Concentration not a number")
+        return false;
+    }
+    if (x.Name.value == ""){
+        alert("Please enter a name")
         return false;
     }
     if (x.issource.checked){
@@ -179,9 +340,12 @@ function ReactionSubmit(){
     return false;
 }
 
+
+
 $(function(){
     //jquery shit
     $( "#addtosourcelist" ).click(function() {
+        console.log("source")
         var toadd=$("#sourcedrop option:selected").index();
         if (toadd!==0 && !(tempsubl.indexOf(toadd-1) > -1)){
             tempsubl.push(toadd-1);
@@ -189,5 +353,22 @@ $(function(){
         console.log(tempsubl);
         updatesourcelist();
     });
-
+    $( "#upload_data" ).click(function() {
+        console.log("pressed upload");
+        pdata={S:Sublist,R:Rctlist};
+        $.ajax({
+        url: '/upload',
+        type: 'POST',
+        data: JSON.stringify(pdata),
+        contentType: "application/json; charset=utf-8",
+        dataType: "text",
+        success: function(result) {
+            console.log("server says");
+            console.log(result);
+            var write="Your URL is /permalink/"+result
+            $('#link').text(write)
+        }
+        });
+    });
+    
 });

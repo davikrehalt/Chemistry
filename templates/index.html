@@ -1,91 +1,120 @@
-
+<!DOCTYPE html>
 <html>
   <head>
+    <link rel="stylesheet" href="style.css">
     <title>Chem</title>
+    <meta charset="UTF-8">
   </head>
   <body>
-    <div id="substances_div">
-        <h1>Substances</h1>
-        <!-- <form action='/api/substance' onsubmit="return validateFormOnSubmit(this);" method="POST"> -->
-        
-        <form name="substance_input" action="#" onsubmit="return SubstanceSubmit();">
-        Name:
-        <input name="Name" type="text" required> 
-        Concentration:
-        <input name="concent" type="number">
-        Source:
-        <input name="issource" type="checkbox" onclick="return sourcebox();">
-        Sourcelist:
-        <select id="sourcedrop">
-            <option selected="selected">(Select)</option>
-        </select>
-        <button type="button" id="addtosourcelist">Add to Sourcelist</button>
-        <input type="submit" value="Add Substance" />
-        </form>
-        <div id="tempfeed">
-            <h3> sourcelist </h3>
-
-            <div class="sub" id="sourcelist">
-            </div>
-        </div>
-
-        <div id="subfeed">
-            <h2> Substance list </h2>
-            <div class="sub" id="subtext">
-                <table><tr><th>Name</th><th>Concentration</th><th>Source</th></tr></table>
-            </div>
-        <!--{% for sub in substances %}
-        <div class="sub">
-            <b>{{ sub[0] }}    {{ sub[1] }}    {{ sub[2] }}   {{ sub[3] }}</b>
-        </div>
-        {% endfor %}
-        -->
-        </div>
-
-    </div>
+    <h1 id="title">Kinetics</h1>
     
-    <div id "reactions_div">
-        <h1>Reactions</h1>
-        <form name="reaction_input" action="#" onsubmit="return ReactionSubmit();">
+    <div id="main">
+      
+        <div id="substances_div">
+           
+            
+            <h1>Substances</h1>
 
-            Select Reactant 1
-            <select id="selectR1">
-                <option selected="selected">(Select)</option>
-            </select>
-            Select Reactant 2
-            <select id="selectR2">
-                <option selected="selected">(Select)</option>
-            </select>
-            Select Product
-            <select id="selectP">
-                <option selected="selected">(Select)</option>
-            </select>
- 
-            Forward rate
-            <input name="forwardrate" type="text">
-            Backward rate
-            <input name="backwardrate" type="number">
-            <input type="submit" value="Add Reaction" />
-        </form>
-        <div id="rctfeed">
-            <h2> Reaction list </h2>
-            <div class="sub" id="rcttext">
-                <table>
-                    <tr>
-                        <th>Reactant 1</th>
-                        <th>Reactant 2</th>
-                        <th>Product</th>
-                        <th>Forward Rate</th>
-                        <th>Backward Rate</th>
-                    </tr>
-                </table>
+            <!-- <form action='/api/substance' onsubmit="return validateFormOnSubmit(this);" method="POST"> -->
+
+            <div class="text_input">
+                <form name="substance_input" action="#" onsubmit="return SubstanceSubmit();">
+                Name:
+                <input name="Name" type="text"> 
+                Concentration:
+                <input name="concent" type="number">
+            </div>
+
+            <div class="select">
+                Source:
+                <input name="issource" type="checkbox" onclick="return sourcebox();">
+                Sourcelist:
+                <select id="sourcedrop">
+                    <option selected="selected">(Select)</option>
+                </select>
+                <button type="button" id="addtosourcelist">Add to Sourcelist</button>
+                <input type="submit" value="Add Substance" />
+                </form>
+            </div>
+
+            <div id="tempfeed">
+                <h3> Sourcelist </h3>
+                <div class="sub" id="sourcelist">
+                </div>
+            </div>
+
+            <div id="subfeed">
+                <h2> Substance list </h2>
+                <div class="sub" id="subtext">
+                    <table><tr><th>Name</th><th>Concentration</th><th>Source</th></tr></table>
+                </div>
+            <!--{% for sub in substances %}
+            <div class="sub">
+                <b>{{ sub[0] }}    {{ sub[1] }}    {{ sub[2] }}   {{ sub[3] }}</b>
+            </div>
+            {% endfor %}
+            -->
+            </div>
+
+        </div>
+
+        <div class="divider"></div>
+        
+        <div id="reactions_div">
+            <h1>Reactions</h1>
+            <form name="reaction_input" action="#" onsubmit="return ReactionSubmit();">
+                <div class="select">
+                Select Reactant 1
+                <select id="selectR1">
+                    <option selected="selected">(Select)</option>
+                </select>
+                Select Reactant 2
+                <select id="selectR2">
+                    <option selected="selected">(Select)</option>
+                </select>
+                Select Product
+                <select id="selectP">
+                    <option selected="selected">(Select)</option>
+                </select>
+                </div>
+
+                <div class="text_input">
+                    Forward rate
+                    <input name="forwardrate" type="number">
+                    Backward rate
+                    <input name="backwardrate" type="number">
+                    <input type="submit" value="Add Reaction" />
+                </div>
+            </form>
+
+            <div id="rctfeed">
+                <h2> Reaction list </h2>
+                <div class="sub" id="rcttext">
+                    <table>
+                        <tr>
+                            <th>Reactant 1</th>
+                            <th>Reactant 2</th>
+                            <th>Product</th>
+                            <th>Forward Rate</th>
+                            <th>Backward Rate</th>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </div>
+        <div id="Data">
+        <button type="button" onclick="Simulate()">GO</button>
+        </div>
+        <div id="graphs">
+            
+        </div>
+        <div id="upload"><button id="upload_data">UPLOAD</button><span id="link">upload to generate link</span></div>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script src="../Scripts.js"> </script>
+        <script src="http://d3js.org/d3.v3.js"></script>
+        
     </div>
-    <div id="Data">
-        <button type="button" id="addtosourcelist" onclick="return upstep();">Step</button>
-    </div>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script src="../Scripts.js"> </script>
+    <div class="divider"></div>
+
   </body>
 </html>

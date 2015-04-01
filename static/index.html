@@ -5,9 +5,9 @@
     <title>Chem</title>
   </head>
   <body>
-    <h1 id="title">Andy</h1>
+    <h1 id="title">Kinetics</h1>
     
-      <div id="main">
+    <div id="main">
       
         <div id="substances_div">
            
@@ -64,7 +64,7 @@
             <form name="reaction_input" action="#" onsubmit="return ReactionSubmit();">
                 <div class="select">
                 Select Reactant 1
-                <select class="selectR1">
+                <select id="selectR1">
                     <option selected="selected">(Select)</option>
                 </select>
                 Select Reactant 2
@@ -102,11 +102,17 @@
             </div>
         </div>
         <div id="Data">
-        <button type="button" id="addtosourcelist" onclick="return upstep();">Step</button>
+        <button type="button" onclick="return Simulate();">GO</button>
+        </div>
+        <div id="graphs">
+            
         </div>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-        <script src="../Scripts.js"> </script>
-        </div>
-        <div class="divider"></div>
+        <script src="../static/Scripts.js"> </script>
+        <script src="http://d3js.org/d3.v3.js"></script>
+        
+    </div>
+    <div class="divider"></div>
+
   </body>
 </html>
