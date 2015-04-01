@@ -8,7 +8,6 @@ from flask import jsonify, render_template,redirect,abort
 
 app = Flask(__name__)
 
-app.debug=True
 
 DATABASE = 'chemistry.db'
 conn=sqlite3.connect(DATABASE)
@@ -43,6 +42,7 @@ def get_connection():
         db = g._db = connect_db()
     return db
         
+get_db=get_connection
 def db_read_sub():
     cur = get_connection().cursor()
     cur.execute("SELECT * FROM data")
@@ -82,7 +82,7 @@ def hello():
     return render_template('index.html',entry=pout)
  
 def hellocorn(environ,start_response):
-    print 'corn!'
+    print('corn!')
     return app.load_static_file('index.html')
  
 @app.route("/Scripts.js",methods=["GET"])
