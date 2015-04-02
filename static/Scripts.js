@@ -198,6 +198,13 @@ function graph(data){
     //});
 }
 
+function updateall(){
+    //to be used only for input
+    updatefeedsub();
+    updatefeedrct();
+    updatedrop();
+}
+
 function state(i){
     var ret=Sublist.map(function(Sub){return Sub.concent});
     ret.unshift(i);
@@ -344,6 +351,21 @@ function ReactionSubmit(){
 
 $(function(){
     //jquery shit
+    console.log("loaded page");
+    if ( $('#hidden').html() != "[]" ) {
+        console.log($('#hidden').html())
+        var json = $( "#hidden" ).html()
+        console.log(json)
+        console.log(JSON.parse(json))
+        obj = JSON.parse(json);
+    }
+    if (typeof obj.S !== "undefined"){
+        console.log(obj);
+        Sublist=obj.S;
+        Rctlist=obj.R;
+        console.log("trying to update")
+        updateall();
+    }
     $( "#addtosourcelist" ).click(function() {
         console.log("source")
         var toadd=$("#sourcedrop option:selected").index();
@@ -356,18 +378,21 @@ $(function(){
     $( "#upload_data" ).click(function() {
         console.log("pressed upload");
         pdata={S:Sublist,R:Rctlist};
+        console.log(pdata);
+        console.log(JSON.stringify(pdata));
+        $('#link').text("generating url, if this takes too long an error probably has occurred but I can't catch it so try again later")
         $.ajax({
-        url: '/upload',
-        type: 'POST',
-        data: JSON.stringify(pdata),
-        contentType: "application/json; charset=utf-8",
-        dataType: "text",
-        success: function(result) {
-            console.log("server says");
-            console.log(result);
-            var write="Your URL is /permalink/"+result
-            $('#link').text(write)
-        }
+            url: '/upload',
+            type: 'POST',
+            data: JSON.stringify(pdata),
+            contentType: "application/json; charset=utf-8",
+            dataType: "text",
+            success: function(result) {
+                console.log("server says");
+                console.log(result);
+                var write="Your URL is /permalink/"+result
+                $('#link').text(write)
+            }
         });
     });
     

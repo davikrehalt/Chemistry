@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
     <title>Chem</title>
     <meta charset="UTF-8">
   </head>
@@ -22,7 +22,7 @@
                 Name:
                 <input name="Name" type="text"> 
                 Concentration:
-                <input name="concent" type="number">
+                <input name="concent" type="number" step="any" min="0">
             </div>
 
             <div class="select">
@@ -47,19 +47,13 @@
                 <h2> Substance list </h2>
                 <div class="sub" id="subtext">
                     <table><tr><th>Name</th><th>Concentration</th><th>Source</th></tr></table>
-                </div>
-            <!--{% for sub in substances %}
-            <div class="sub">
-                <b>{{ sub[0] }}    {{ sub[1] }}    {{ sub[2] }}   {{ sub[3] }}</b>
-            </div>
-            {% endfor %}
-            -->
-            </div>
+                
 
-        </div>
+                </div>
+            </div>
 
         <div class="divider"></div>
-        
+        </div>
         <div id="reactions_div">
             <h1>Reactions</h1>
             <form name="reaction_input" action="#" onsubmit="return ReactionSubmit();">
@@ -80,9 +74,9 @@
 
                 <div class="text_input">
                     Forward rate
-                    <input name="forwardrate" type="number">
+                    <input name="forwardrate" type="number" step="any" min="0">
                     Backward rate
-                    <input name="backwardrate" type="number">
+                    <input name="backwardrate" type="number" step="any" min="0">
                     <input type="submit" value="Add Reaction" />
                 </div>
             </form>
@@ -114,7 +108,12 @@
         <script src="http://d3js.org/d3.v3.js"></script>
         
     </div>
-    <div class="divider"></div>
+    
 
+    <div class="hidden" id="hidden">
+    {{entry}}
+    </div>
+    <div class="divider"></div>
+        
   </body>
 </html>

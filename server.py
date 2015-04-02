@@ -2,9 +2,11 @@ import sqlite3
 import time
 import os
 import copy
+import json
 import random
 from flask import Flask,request,g, url_for
 from flask import jsonify, render_template,redirect,abort
+from time import gmtime, strftime
 
 app = Flask(__name__)
 
@@ -13,7 +15,7 @@ DATABASE = 'chemistry.db'
 conn=sqlite3.connect(DATABASE)
 c=conn.cursor()
 
-c.execute("CREATE TABLE if not exists data (number, name, content)")
+c.execute("CREATE TABLE if not exists data (time, name, content)")
 conn.commit()
 conn.close()
 
@@ -51,33 +53,36 @@ def db_read_sub():
  
 def db_findnumber(number):
     print('fetch')
-    print(db_read_sub())
     print(number)
     cur = get_connection().cursor()
-    out=cur.execute("SELECT * FROM data WHERE name =?",[number])
-    print('hi')
+    cur.execute("SELECT * FROM data WHERE name =?",[number])
+    out=cur.fetchall()
     if out:
         print('found')
-        return cur.fetchall()[0][2]
+        print(out)
+        return out[0][2]
     else:
         print('No such place')
-        return "404"
+        return False
     
-def db_add_sub(number, name, content):
+def db_add_sub(name, content):
     print('adding sub')
-    print(number)
     print(name)
     print(content)
     cur = get_db().cursor()
-    sub_info = (number,name, str(content))
+    times=strftime("%Y-%m-%d %H:%M:%S", gmtime())
+    sub_info = (times,name, str(content))
     cur.execute("INSERT INTO data VALUES (?, ?, ?)", sub_info)
     get_db().commit()
     print ('done adding')
 
 @app.route("/")
-def hello():
+def hello(inputtext=False):
     print(url_for('static', filename='Scripts.js'))
-    pout=[]
+    if inputtext:
+        pout=inputtext
+    else:
+        pout=[]
     print(pout)
     return render_template('index.html',entry=pout)
  
@@ -97,23 +102,27 @@ def stylecss():
 def uploadstuff():
     print('uploadstart')
     try:
-        content = request.get_json(force=True)
+        content = request.get_json()
     except:
         print('eeeeee')
         raise
     print(content)
+    print(json.dumps(content))
     tempn=get30digits()
     print(tempn)
-    db_add_sub(subno[0],tempn,content)
+    db_add_sub(tempn,json.dumps(content))
     subno[0]+=1
     return str(tempn)
    
 @app.route('/permalink/<path:path>')
 def serve_file(path):
     print('try to serve')
-    if len(db_findnumber(path))>0:
+    print(path)
+    if db_findnumber(path):
         print('something')
-        return str(db_findnumber(path))
+        print(db_findnumber(path))
+        pout=db_findnumber(path)
+        return hello(pout)
     else:
         print('nothing')
         return '404 nothing here'
