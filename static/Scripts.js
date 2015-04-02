@@ -41,11 +41,11 @@ function source(Name,bconcent,pointed){
     pointed = typeof pointed !== 'undefined' ? pointed:[];
     this.base=substance;
     this.base(Name,bconcent,'True');
-    this.concent=Number(bconcent)+sum(pointed.map(function(x){Sublist[x]}));
+    this.concent=Number(bconcent)+sum(pointed.map(function(x){Sublist[x].concent}));
     this.bconcent=bconcent;
     this.pointed=pointed
     this.update=function(){
-        this.concent=this.bconcent+sum(this.pointed.map(function(x){Sublist[x]}));
+        this.concent=this.bconcent+sum(this.pointed.map(function(x){Sublist[x].concent}));
     }
 }
 
