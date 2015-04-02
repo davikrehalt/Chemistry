@@ -43,7 +43,7 @@ function source(Name,bconcent,pointed){
     this.base(Name,bconcent,'True');
     this.concent=Number(bconcent)+sum(pointed.map(function(x){return Sublist[x].concent}));
     this.bconcent=bconcent;
-    this.pointed=pointed
+    this.pointed=pointed;
     this.update=function(){
         this.concent=this.bconcent+sum(this.pointed.map(function(x){return Sublist[x].concent}));
     }
@@ -103,7 +103,7 @@ function upstep(dt,showstuff){
         }
      }
      for (sub in Sublist){
-        if (Sublist[sub].issource){
+        if (Sublist[sub].issource==true){
             Sublist[sub].update();
         }
      }
