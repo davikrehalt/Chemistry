@@ -66,26 +66,27 @@ function resetstate(){
     }
 }
 
-function upstep(dt){
+function upstep(dt,showstuff){
      dt = typeof dt !== 'undefined' ? dt : 0.001;
+     showstuff = typeof showstuff !== 'undefined' ? true : false;
      //console.log("called upstep time:"+dt.toString())
-
+     var error;
      var templ=Array.apply(null, new Array(Sublist.length)).map(Number.prototype.valueOf,0);
      for (rct in Rctlist){
         var rxn=Rctlist[rct];
-        var ffwd=rxn.forward*Sublist[rxn.R1].concent*Sublist[rxn.R2].concent*dt;
-        var fbck=rxn.backward*Sublist[rxn.P].concent*dt;
+        var ffwd=rxn.forward*Sublist[rxn.R1].concent*Sublist[rxn.R2].concent*1.0;
+        var fbck=rxn.backward*Sublist[rxn.P].concent*1.0;
         var cc=ffwd-fbck;
         //console.log(cc);
         templ[rxn.R1]-=cc;
-        templ[rxn.R2]-=cc;
+        templ[rxn.R2]-=cc;  
         templ[rxn.P]+=cc;
         //console.log(templ);
      } 
-
+     var indicator1=sum(templ.map(function(x){return Math.pow(x,2)}));
      for (sub in Sublist){
         if (!Sublist[sub].issource){
-            Sublist[sub].concent+=templ[sub];
+            Sublist[sub].concent+=templ[sub]*dt;
             //console.log(Sublist[sub].concent);
         }
      }
@@ -94,9 +95,26 @@ function upstep(dt){
             Sublist[sub].update();
         }
      }
+
+     var templ=Array.apply(null, new Array(Sublist.length)).map(Number.prototype.valueOf,0);
+     for (rct in Rctlist){
+        var rxn=Rctlist[rct];
+        var ffwd=rxn.forward*Sublist[rxn.R1].concent*Sublist[rxn.R2].concent;
+        var fbck=rxn.backward*Sublist[rxn.P].concent;
+        var cc=ffwd-fbck;
+        //console.log(cc);
+        templ[rxn.R1]-=cc;
+        templ[rxn.R2]-=cc;
+        templ[rxn.P]+=cc;
+        //console.log(templ);
+     } 
+
+     var indicator2=sum(templ.map(function(x){return Math.pow(x,2)}));
      //console.log("finished step")
      //updatefeedsub();
-
+     //console.log(indicator1);
+     //console.log(indicator2);
+     return [Math.abs(indicator1-indicator2)/indicator1,indicator1]
 }
 
 function graph(data){
@@ -129,9 +147,9 @@ function graph(data){
     }
     //console.log(minl);
     //console.log(maxl);
-    console.log(arrayMin(minl).toString()+arrayMax(maxl).toString());
+    console.log(arrayMin(minl).toString()+'   '+arrayMax(maxl).toString());
     var y = d3.scale.linear()
-        .domain([arrayMin(minl),arrayMax(maxl)])
+        .domain([0,arrayMax(maxl)])
         .range([height, 0]);
 
     //console.log(y(data[0][1]))
@@ -214,19 +232,45 @@ function state(i){
 function Simulate(n,dt){
     console.log("sim")
     document.getElementById("graphs").innerHTML="loading..."
-    dt = typeof dt !== 'undefined' ? dt : 0.001;
-    n = typeof n !== 'undefined' ? n : 5000;
+    dt = typeof dt !== 'undefined' ? dt : 1; //max dt
+    n = typeof n !== 'undefined' ? n : 10000; 
     var data=[];
     console.log(n)
     console.log(dt)
     console.log("started calculation")
     console.log(state(0));
+    var timesim=0.0;
+    var step=0.00001;
+    console.log("step: "+step)
+    var a;
+    var startvalue;
+    var test=0;
     for (var i=0; i<n; i++){
         //console.log(state(i));
-        data.push(state(i));
-        upstep(dt);
+        
+        data.push(state(timesim));
+        a=upstep(step);
+        if (i==1){
+            startvalue=a[1];
+        }
+        timesim+=step;
+        if (a[0]<0.001 && 2*step<dt){
+            step=2*step;
+            //console.log("step: "+step)
+        }else if (a[0]>0.01 && step/2 > 0.00001){
+            step=step/2;
+            //console.log("step: "+step)
+        }
+        if (a[1]/startvalue<0.0001 && i>1000){
+            break;
+        }
+        if (i%200==0 && test==1){
+            console.log(state(i));
+            console.log(a[0])
+            console.log(a[1])
+        }
+
     }
-    console.log(state(n))
     console.log("tograph")
     graph(data);
     resetstate();
