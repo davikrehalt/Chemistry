@@ -88,7 +88,7 @@ def hello(inputtext=False):
  
 @app.route("/dev/showdatabase")
 def showdata():
-    return db_read_sub()
+    return str(db_read_sub())
 
 def hellocorn(environ,start_response):
     print('corn!')
@@ -102,6 +102,8 @@ def javascript():
 def stylecss():
     return redirect(url_for('static', filename='style.css'))
   
+def graphing():
+    return redirect(url_for('static', filename='d3.v2.min.js'))
 @app.route("/upload",methods=["POST"])
 def uploadstuff():
     print('uploadstart')

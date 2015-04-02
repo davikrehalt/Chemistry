@@ -352,6 +352,7 @@ function ReactionSubmit(){
 $(function(){
     //jquery shit
     console.log("loaded page");
+    $( "#hidden" ).hide();
     if ( $('#hidden').html() != "[]" ) {
         console.log($('#hidden').html())
         var json = $( "#hidden" ).html()
