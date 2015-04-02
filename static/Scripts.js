@@ -64,6 +64,18 @@ function resetstate(){
     for (sub in Sublist){
         Sublist[sub].concent=Sublist[sub].concenti;
     }
+    for (sub in Sublist){
+        if (Sublist[sub].issource){
+            Sublist[sub].update();
+        }
+     }
+}
+
+function updateall(){
+    //to be used only for input
+    updatefeedsub();
+    updatefeedrct();
+    updatedrop();
 }
 
 function upstep(dt,showstuff){
@@ -123,105 +135,16 @@ function graph(data){
 
     document.getElementById("graphs").innerHTML=""
     var n=data.length
-    //console.log(n);
-    //console.log(data[0])
-    var margin = {top: 20, right: 20, bottom: 30, left: 50},
-        width = 960 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
-
-    //scales
-    var x = d3.scale.linear()
-        .domain(d3.extent(data,function(d){return d[0]}))
-        .range([0, width]);
-
-    //console.log(x(data[0][0]))
-    //console.log(x(5))
-    
-    var minl=[]
-    var maxl=[]
-
-    for (sub in Sublist){
-        //console.log(d3.min(data,function(d){return +d[Number(sub)+1]}))
-        minl.push(d3.min(data,function(d){return +d[Number(sub)+1]}))
-        maxl.push(d3.max(data,function(d){return +d[Number(sub)+1]}))
+    //switching to Flot!!!
+    var dlist=[];
+    for (var i=0;i<Sublist.length;i++){
+        dlist.push({label:Sublist[i].Name, data:data.map(function(d){return [d[0],d[i+1]]}), lines: { show: true, fill: false}})
     }
-    //console.log(minl);
-    //console.log(maxl);
-    console.log(arrayMin(minl).toString()+'   '+arrayMax(maxl).toString());
-    var y = d3.scale.linear()
-        .domain([0,arrayMax(maxl)])
-        .range([height, 0]);
-
-    //console.log(y(data[0][1]))
-    //console.log(y(0.5))
-
-    var xAxis = d3.svg.axis()
-        .scale(x)
-        .orient("bottom");
-
-    var yAxis = d3.svg.axis()
-        .scale(y)
-        .orient("left");
-
-    //generates path
-    var line={};
-    for (var sub=0;sub<Sublist.length;sub++){
-        line.sub=d3.svg.line()
-        line.sub.x(function(d) { return x(d[0]); })
-            .y(function(d) { return y(d[sub+1])});
-    }
-    var svg = d3.select("#graphs").append("svg")
-    
-    svg.attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-    console.log("functions of graph")
-    /* add some input later
-    d3.tsv("data.tsv", function(error, data) {
-      data.forEach(function(d) {
-        d.date = parseDate(d.date);
-        d.close = +d.close;
-      });
-      x.domain(d3.extent(data, function(d) { return d.date; }));
-      y.domain(d3.extent(data, function(d) { return d.close; }));
-
-    */
-    //console.log(data[0])
-    //console.log(data[0].x)
-    //axis
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
-
-    svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis)
-      .append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 6)
-        .attr("dy", ".71em") //offset
-        .style("text-anchor", "end");
-
-    for (var sub=0;sub<Sublist.length;sub++){
-        //draw stuff
-        svg.append("path")
-            .datum(data)
-            .attr("class", "line")
-            .attr("d", line.sub)
-            .attr('stroke', 'green');
-    }
+    $.plot($("#graphs"), dlist)
     console.log("over");
-    //});
+    return dlist
 }
 
-function updateall(){
-    //to be used only for input
-    updatefeedsub();
-    updatefeedrct();
-    updatedrop();
-}
 
 function state(i){
     var ret=Sublist.map(function(Sub){return Sub.concent});
@@ -231,7 +154,7 @@ function state(i){
 
 function Simulate(n,dt){
     console.log("sim")
-    document.getElementById("graphs").innerHTML="loading..."
+    document.getElementById("graphs").innerHTML="<span>loading...</span>"
     dt = typeof dt !== 'undefined' ? dt : 1; //max dt
     n = typeof n !== 'undefined' ? n : 10000; 
     var data=[];
@@ -244,7 +167,7 @@ function Simulate(n,dt){
     console.log("step: "+step)
     var a;
     var startvalue;
-    var test=0;
+    var test=1;
     for (var i=0; i<n; i++){
         //console.log(state(i));
         
@@ -261,20 +184,40 @@ function Simulate(n,dt){
             step=step/2;
             //console.log("step: "+step)
         }
-        if (a[1]/startvalue<0.0001 && i>1000){
+        if (a[1]/startvalue<0.001 && i>1000){
+            console.log("quit")
+            console.log(i)
             break;
         }
-        if (i%200==0 && test==1){
+        if (i%500==0 && test==1){
             console.log(state(i));
-            console.log(a[0])
+            console.log(a[0]/startvalue)
             console.log(a[1])
+            console.log(timesim)
         }
 
     }
-    console.log("tograph")
-    graph(data);
-    resetstate();
-    return false;
+
+    return data;
+}
+
+
+function cleandata(data){
+    //cleans data to <1000 pts
+    var time=0;
+    var out=2000;
+    var step=data[data.length-1][0]/out;
+    var ret=[];
+    console.log(step);
+    for (var i=0;i<data.length-1;i++){
+        if (data[i][0]>time){
+            ret.push(data[i])
+            time=data[i][0]+step
+        }
+    }
+    console.log(ret[0])
+    console.log(ret[100])
+    return ret
 }
 
 function updatefeedrct(){
@@ -312,7 +255,6 @@ function updatedrop(){
     document.getElementById("selectP").innerHTML = writeout;
     document.getElementById("sourcedrop").innerHTML=writeout;
 }
-
 function clearinputsub(){
     console.log("clearsub")
     var x = document.forms["substance_input"];
@@ -330,7 +272,7 @@ function sourcebox(){
 }
 
 function updatesourcelist(){
-    writeout="<p>"
+    var writeout="<p>"
     for (var sub in tempsubl){
         writeout+=String(Sublist[tempsubl[sub]].Name);
         writeout+=", "
@@ -397,20 +339,39 @@ $(function(){
     //jquery shit
     console.log("loaded page");
     $( "#hidden" ).hide();
-    if ( $('#hidden').html() != "[]" ) {
+    $( "#hidden2" ).hide();
+    if ( $('#hidden').html() !== "[]" ) {
         console.log($('#hidden').html())
         var json = $( "#hidden" ).html()
-        console.log(json)
-        console.log(JSON.parse(json))
-        obj = JSON.parse(json);
+        var obj = JSON.parse(json);
+        if (typeof obj.S !== "undefined"){
+            console.log(obj);
+            Sublist=obj.S;
+            Rctlist=obj.R;
+            console.log("trying to update")
+            updateall();
+        }if (typeof obj.S !== "undefined"){
+            console.log(obj);
+            Sublist=obj.S;
+            Rctlist=obj.R;
+            console.log("trying to update")
+            updateall();
+        }
     }
-    if (typeof obj.S !== "undefined"){
-        console.log(obj);
-        Sublist=obj.S;
-        Rctlist=obj.R;
-        console.log("trying to update")
-        updateall();
+    if ($('#hidden2').html()!="None") {
+        console.log("hid2")
+        console.log($('#hidden2').html())
+        if ($('#hidden2').html()=="true"){
+            var data=cleandata(Simulate(10000));       
+            $("#graphs").width(600);
+            $("#graphs").height(300);
+            console.log("tograph")
+            graph(data);
+            resetstate();
+
+        }
     }
+    
     $( "#addtosourcelist" ).click(function() {
         console.log("source")
         var toadd=$("#sourcedrop option:selected").index();
@@ -422,7 +383,7 @@ $(function(){
     });
     $( "#upload_data" ).click(function() {
         console.log("pressed upload");
-        pdata={S:Sublist,R:Rctlist};
+        var pdata={S:Sublist,R:Rctlist};
         console.log(pdata);
         console.log(JSON.stringify(pdata));
         $('#link').text("generating url, if this takes too long an error probably has occurred but I can't catch it so try again later")
@@ -439,6 +400,27 @@ $(function(){
                 $('#link').text(write)
             }
         });
+
+    });
+    $( "#simulate" ).click(function() {
+        console.log("pressed GO");
+        var data=cleandata(Simulate(6000));       
+        $("#graphs").width(600);
+        $("#graphs").height(300);
+        console.log("tograph")
+        var graphdata=graph(data);
+        //for debug
+        /*$.ajax({
+            url: '/graphdata',
+            type: 'POST',
+            data: JSON.stringify(graphdata),
+            contentType: "application/json; charset=utf-8",
+            dataType: "text",
+            success: function(result) {
+            }
+        });*/
+        resetstate();
+
     });
     
 });

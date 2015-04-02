@@ -97,22 +97,21 @@
             </div>
         </div>
         <div id="Data">
-        <button type="button" onclick="Simulate()">GO</button>
+            <button type="button" id="simulate">GO</button>
         </div>
         <div id="graphs">
-            
+            <span>Click GO to graph</span>
         </div>
         <div id="upload"><button id="upload_data">UPLOAD</button><span id="link">upload to generate link</span></div>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-        <script src="../Scripts.js"> </script>
-        <script src="http://d3js.org/d3.v3.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../Scripts.js"> </script>
+        <script language="javascript" type="text/javascript" src="../jquery.flot.js"></script>
         
     </div>
     
 
-    <div class="hidden" id="hidden">
-    {{entry}}
-    </div>
+    <div class="hidden" id="hidden">{{entry}}</div>
+    <div class="hidden2" id="hidden2">{{entry2}}</div>
     <div class="divider"></div>
         
   </body>

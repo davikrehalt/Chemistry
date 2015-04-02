@@ -20,24 +20,6 @@ body{
 	background-color: #FFF;
 	font-family: sans-serif;
 }
-
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
-
-.x.axis path {
-  display: none;
-}
-
-.line {
-  fill: none;
-  stroke: steelblue;
-  stroke-width: 1.5px;
-}
-
 #main{
 	margin-left: auto;
 	margin-right: auto;
@@ -144,4 +126,6 @@ button, input{
 
 #graphs{
 	text-align: center;
+	/*width:600px;
+	height:300px*/
 }

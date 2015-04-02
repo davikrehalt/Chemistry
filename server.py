@@ -23,6 +23,7 @@ subno=[0]
 
 port = int(os.environ.get('PORT', 5000))
 
+tempout=[""]
 def get30digits():
     return ''.join([str(random.randrange(10)) for i in range(30)])
     
@@ -79,12 +80,14 @@ def db_add_sub(name, content):
 @app.route("/")
 def hello(inputtext=False):
     print(url_for('static', filename='Scripts.js'))
+    grapher = request.args.get('graph')
+    print(grapher)
     if inputtext:
         pout=inputtext
     else:
         pout=[]
     print(pout)
-    return render_template('index.html',entry=pout)
+    return render_template('index.html',entry=pout,entry2=grapher)
  
 @app.route("/dev/showdatabase")
 def showdata():
@@ -102,8 +105,9 @@ def javascript():
 def stylecss():
     return redirect(url_for('static', filename='style.css'))
   
+@app.route("/jquery.flot.js",methods=["GET"])
 def graphing():
-    return redirect(url_for('static', filename='d3.v2.min.js'))
+    return redirect(url_for('static', filename='jquery.flot.js'))
 @app.route("/upload",methods=["POST"])
 def uploadstuff():
     print('uploadstart')
@@ -123,6 +127,19 @@ def uploadstuff():
     subno[0]+=1
     return str(tempn)
    
+@app.route("/graphdata",methods=["POST"])
+def graphstuff():
+    print('graph')
+    content = request.get_json()
+    tempout[0]=json.dumps(content)
+    return "blank"
+   
+@app.route('/temp/show')
+def temporary():
+    print("tempfiles")
+    return str(tempout[0])
+   
+
 @app.route('/permalink/<path:path>')
 def serve_file(path):
     print('try to serve')
