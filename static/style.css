@@ -141,3 +141,7 @@ h1#title{
 button, input{
 	padding: 5px;
 }
+
+#graphs{
+	text-align: center;
+}
