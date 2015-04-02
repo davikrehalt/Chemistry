@@ -86,6 +86,10 @@ def hello(inputtext=False):
     print(pout)
     return render_template('index.html',entry=pout)
  
+@app.route("/dev/showdatabase")
+def showdata():
+    return db_read_sub()
+
 def hellocorn(environ,start_response):
     print('corn!')
     return app.load_static_file('index.html')
@@ -108,8 +112,11 @@ def uploadstuff():
         raise
     print(content)
     print(json.dumps(content))
-    tempn=get30digits()
-    print(tempn)
+    while True:
+        tempn=get30digits()
+        print(tempn)
+        if not db_findnumber(tempn):
+            break
     db_add_sub(tempn,json.dumps(content))
     subno[0]+=1
     return str(tempn)
