@@ -39,19 +39,18 @@ function substance(Name,concent,issource){
 function source(Name,bconcent,pointed){
     bconcent = typeof bconcent !== 'undefined' ? bconcent:0.0;
     pointed = typeof pointed !== 'undefined' ? pointed:[];
+    bconcent = bconcent == "" ? 0.0:Number(bconcent)
     this.base=substance;
     this.base(Name,bconcent,'True');
+    console.log(pointed);
+    console.log(bconcent);
     this.concent=Number(bconcent)+sum(pointed.map(function(x){return Sublist[x].concent}));
-    this.bconcent=bconcent;
+    console.log(this.concent)
+    this.bconcent=Number(bconcent);
     this.pointed=pointed;
-    this.update=function(){
-        this.concent=this.bconcent+sum(this.pointed.map(function(x){return Sublist[x].concent}));
-    }
 }
 
 source.prototype=new substance;
-
-
 function reaction(forward,backward,A1,A2,B){
     this.forward=forward;
     this.backward=backward;
@@ -64,9 +63,13 @@ function resetstate(){
     for (sub in Sublist){
         Sublist[sub].concent=Sublist[sub].concenti;
     }
+    updatesource();
+}
+
+function updatesource(){
     for (sub in Sublist){
         if (Sublist[sub].issource){
-            Sublist[sub].update();
+            Sublist.concent=Sublist.bconcent+sum(Sublist[sub].pointed.map(function(x){return Sublist[x].concent}));
         }
      }
 }
@@ -102,12 +105,8 @@ function upstep(dt,showstuff){
             //console.log(Sublist[sub].concent);
         }
      }
-     for (sub in Sublist){
-        if (Sublist[sub].issource==true){
-            Sublist[sub].update();
-        }
-     }
 
+    updatesource();
      var templ=Array.apply(null, new Array(Sublist.length)).map(Number.prototype.valueOf,0);
      for (rct in Rctlist){
         var rxn=Rctlist[rct];
